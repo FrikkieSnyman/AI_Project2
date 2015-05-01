@@ -6,7 +6,7 @@ public class GeneticAI extends AI{
 		GeneticAgent[] agents = new GeneticAgent[population];
 		
 		for (int j = 0; j < agents.length; ++j){
-			agents[j] = new GeneticAgent();
+			agents[j] = new GeneticAgent(j);
 			agents[j].agent = new Agent();
 		}
 
@@ -18,7 +18,7 @@ public class GeneticAI extends AI{
 
 				for (int j = 0; j < population; ++j){
 					Agent tmp = agents[j].agent;
-					agents[j] = new GeneticAgent();
+					agents[j] = new GeneticAgent(j);
 					agents[j].agent = tmp;
 					agents[j].chart = currentChart;
 					agents[j].start();

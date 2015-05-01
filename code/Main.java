@@ -3,14 +3,15 @@ import java.util.*;
 
 public class Main{
 	public static void main(String[] args) {		
-		Chart[] renkoChart = new Chart[3];
+		// Chart[] renkoChart = new Chart[3];
+		Chart[] renkoChart = new Chart[1];
 
 		FileHandler fileHander = new FileHandler("../../files/agl.dat");
 		renkoChart[0] = fileHander.getChart();
-		fileHander = new FileHandler("../../files/ALSI40.dat");
-		renkoChart[1] = fileHander.getChart();
-		fileHander = new FileHandler("../../files/bil.dat");
-		renkoChart[2] = fileHander.getChart();
+		// fileHander = new FileHandler("../../files/ALSI40.dat");
+		// renkoChart[1] = fileHander.getChart();
+		// fileHander = new FileHandler("../../files/bil.dat");
+		// renkoChart[2] = fileHander.getChart();
 		// fileHander = new FileHandler("../../files/gfi.dat", renkoChart[3]);
 
 		AIHandler aihandler = new AIHandler(renkoChart);

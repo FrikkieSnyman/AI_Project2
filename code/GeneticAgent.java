@@ -7,9 +7,11 @@ public class GeneticAgent extends Thread{
 	public boolean generationDone = false;
 	public long money = 100000*100;
 	public long fitness;
-	public long shares = 0;
-	
-	public GeneticAgent(){}
+	public Integer shares = 0;
+	public Integer id;
+	public GeneticAgent(Integer id){
+		this.id = id;
+	}
 
 	public void run(){
 		generationDone = false;
@@ -28,7 +30,7 @@ public class GeneticAgent extends Thread{
 			takeAction(Integer.parseInt(binary,2),renkoChart.get(i+4));
 		}
 		determineFitness(renkoChart);
-		System.out.println(Thread.currentThread().getId() + " " + fitness + " " + money);
+		System.out.println(id + " " + fitness + " " + money);
 		generationDone = true;
 	}
 
@@ -43,15 +45,15 @@ public class GeneticAgent extends Thread{
 
 		switch (bsh) {
 			case BUY: 
-				// System.out.println(Thread.currentThread().getId() + "trader Buying...");
+				// System.out.println(id + "trader Buying...");
 				buy(day);
 				break;
 			case SELL:
 				sell(day);
-				// System.out.println(Thread.currentThread().getId() + "trader Selling...");
+				// System.out.println(id + "trader Selling...");
 				break;
 			case HOLD:
-				// System.out.println(Thread.currentThread().getId() + "trader Holding...");
+				// System.out.println(id + "trader Holding...");
 				return;
 			default: 
 				break;
@@ -90,7 +92,21 @@ public class GeneticAgent extends Thread{
 	}
 
 	private void sell(Brick day){
+		Integer sum = day.day.highPrice + day.day.lowPrice;
+		Integer sharePrice = (int)Math.round((double)sum/2);
+		Integer sellValue = sharePrice * shares;
 
+		Integer brokerageFee = (int) Math.round(0.005*sellValue);
+		if (brokerageFee < 7000){
+			brokerageFee = 7000;
+		}
+		Integer strate = 1158;
+		Integer ipl = (int) Math.round(0.000002*sellValue);
+		Integer vat = (int) Math.round(0.14 * (brokerageFee + strate + ipl));
+
+		Integer total = sellValue - vat - brokerageFee - strate - ipl;
+		shares = 0;
+		money += total;
 	}
 
 }
