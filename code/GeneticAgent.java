@@ -5,7 +5,7 @@ public class GeneticAgent extends Thread{
 	public Agent agent = null;
 	public Chart chart = null;
 	public boolean generationDone = false;
-	public long money = 100000;
+	public long money = 100000*100;
 	public long fitness;
 	public long shares = 0;
 	
@@ -28,7 +28,7 @@ public class GeneticAgent extends Thread{
 			takeAction(Integer.parseInt(binary,2),renkoChart.get(i+4));
 		}
 		determineFitness(renkoChart);
-		System.out.println(Thread.currentThread().getId() + " " + fitness);
+		System.out.println(Thread.currentThread().getId() + " " + fitness + " " + money);
 		generationDone = true;
 	}
 
@@ -61,7 +61,32 @@ public class GeneticAgent extends Thread{
 
 	private void buy(Brick day){
 		Integer sum = day.day.highPrice + day.day.lowPrice;
-		Double sharePrice = (double)sum/2;
+		Integer sharePrice = (int)Math.round((double)sum/2);
+
+		Integer suggestedAmount = (int)Math.round(money / sharePrice);
+		boolean pass = bought(suggestedAmount,sharePrice);
+		while(!pass){
+			pass = bought(--suggestedAmount,sharePrice);
+		}
+		money -= sharePrice * suggestedAmount;
+		shares += suggestedAmount;
+	}
+
+	private boolean bought(Integer suggestedAmount, Integer sharePrice){
+		Integer tradeAmount = sharePrice * suggestedAmount;
+
+		Integer stt = (int) Math.round(0.0025*tradeAmount);
+		Integer brokerageFee = (int) Math.round(0.005*tradeAmount);
+		if (brokerageFee < 7000){
+			brokerageFee = 7000;
+		}
+		Integer strate = 1158;
+		Integer ipl = (int) Math.round(0.000002*tradeAmount);
+		Integer vat = (int) Math.round(0.14 * (stt + brokerageFee + strate + ipl));
+
+		Integer total = tradeAmount + vat + stt + brokerageFee + strate + ipl;
+
+		return (money > total);
 	}
 
 	private void sell(Brick day){
