@@ -8,7 +8,7 @@ public class FileHandler{
 
 	private Chart generatedChart;
 
-	public FileHandler(String path, Chart _generatedChart){
+	public FileHandler(String path){
 		List<String> lines = null;			
 		
 		try{
@@ -18,7 +18,11 @@ public class FileHandler{
 			e.printStackTrace();
 		}
 
-		_generatedChart = new Chart(lines);
+		generatedChart = new Chart(lines);
 		// _generatedChart = generatedChart.renko();
+	}
+
+	public Chart getChart(){
+		return generatedChart;
 	}
 }

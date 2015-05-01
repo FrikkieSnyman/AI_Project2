@@ -1,13 +1,13 @@
 import java.util.*;
 
 public class Chart{
-	private LinkedList<Brick> udChart;
+	private HashMap<Day,UD> udChart;
 	private LinkedList<Day> dateChart;
 	private Integer range;
 	private Integer blockSize;
 	public Chart(List<String> data){
 		dateChart = new LinkedList<>();
-		udChart = new LinkedList<>();
+		udChart = new HashMap<>();
 		Integer max = Integer.parseInt(data.get(0).split("\t")[1].trim());
 		Integer min = Integer.parseInt(data.get(0).split("\t")[1].trim());
 
@@ -30,7 +30,7 @@ public class Chart{
 		renko();
 	}
 
-	public void renko(){
+	public HashMap<Day,UD> renko(){
 		Integer stockPrice = dateChart.get(0).closingPrice;
 		
 		for (int i = 0; i < dateChart.size(); ++i){
@@ -39,22 +39,18 @@ public class Chart{
 			Integer j = 0;
 
 			while (change >= blockSize){
-				// Day tmp = new Day(dateChart.get(i).date,dateChart.get(i).closingPrice,dateChart.get(i).highPrice,dateChart.get(i).lowPrice,dateChart.get(i).index);
-				// tmp.count = j++;
+				Day tmp = new Day(dateChart.get(i).date,dateChart.get(i).closingPrice,dateChart.get(i).highPrice,dateChart.get(i).lowPrice,dateChart.get(i).index);
+				tmp.count = j++;
 				if (currentDay.closingPrice > stockPrice){
-					udChart.add(new Brick(dateChart.get(i),UD.UP));
+					udChart.put(tmp,UD.UP);
 					stockPrice += blockSize;
 				} else {
-					udChart.add(new Brick(dateChart.get(i),UD.DOWN));
+					udChart.put(tmp,UD.DOWN);
 					stockPrice -= blockSize;
 				}
 				change = Math.abs(currentDay.closingPrice - stockPrice);
 			}
 		}
-		
-	}
-
-	public LinkedList<Brick> getRenkoChart(){
 		return udChart;
 	}
 }

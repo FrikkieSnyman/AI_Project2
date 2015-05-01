@@ -11,9 +11,7 @@ public class GeneticAI extends AI{
 		}
 
 		for (int i = 0; i < this.chart.length; ++i){
-			System.out.println(i);
-
-			Chart currentChart = this.chart[i];
+			Chart currentChart = super.chart[i];
 			
 			for (int g = 0; g < generations; ++g){
 				boolean block = true;
@@ -36,12 +34,12 @@ public class GeneticAI extends AI{
 					}
 				}
 
-				calculateNextGeneration(agents);
+				calculateNextGeneration(agents, selectionStrategy, tournamentSize, crossover, mutation, gap);
 			}
 		}
 	}
 
-	private void calculateNextGeneration(GeneticAgent[] agents){
+	private void calculateNextGeneration(GeneticAgent[] agents, Integer selectionStrategy, Integer tournamentSize, Double crossover, Double mutation, Double gap){
 
 	}
 }

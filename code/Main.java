@@ -5,12 +5,15 @@ public class Main{
 	public static void main(String[] args) {		
 		Chart[] renkoChart = new Chart[3];
 
-		FileHandler fileHander = new FileHandler("../../files/agl.dat", renkoChart[0]);
-		fileHander = new FileHandler("../../files/ALSI40.dat", renkoChart[1]);
-		fileHander = new FileHandler("../../files/bil.dat", renkoChart[2]);
-		// fileHander = new FileHandler("../../files/gfi.dat", renkoChart[3]);		
-		AIHandler aihandler = new AIHandler(renkoChart);
+		FileHandler fileHander = new FileHandler("../../files/agl.dat");
+		renkoChart[0] = fileHander.getChart();
+		fileHander = new FileHandler("../../files/ALSI40.dat");
+		renkoChart[1] = fileHander.getChart();
+		fileHander = new FileHandler("../../files/bil.dat");
+		renkoChart[2] = fileHander.getChart();
+		// fileHander = new FileHandler("../../files/gfi.dat", renkoChart[3]);
 
+		AIHandler aihandler = new AIHandler(renkoChart);
 		System.out.println("1. Genetic AI\n2. Hillclimb AI");
 		String choice = System.console().readLine();
 		
