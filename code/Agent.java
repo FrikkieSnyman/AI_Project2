@@ -2,6 +2,7 @@ import java.util.Random;
 
 public class Agent{
 	public BSH[] bsh;
+	public long fitness = 0;
 	public Agent(){
 		bsh = new BSH[32];
 

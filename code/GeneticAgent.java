@@ -3,41 +3,47 @@ import java.util.*;
 public class GeneticAgent extends Thread{
 	
 	public Agent agent = null;
-	public Chart chart = null;
+	public Chart[] chart = null;
 	public boolean generationDone = false;
 	public long money = 100000*100;
-	public long fitness;
+	public long fitness = 0;
 	public Integer shares = 0;
 	public Integer id;
+	
 	public GeneticAgent(Integer id){
 		this.id = id;
 	}
 
 	public void run(){
 		generationDone = false;
-		LinkedList<Brick> renkoChart = chart.getRenkoChart();
-		
-		for (int i = 0; i < renkoChart.size()-4; ++i){
-			String binary = "";
-			for (int j = 0; j < 4; ++j){
-				
-				if (renkoChart.get(i+j).ud == UD.UP){
-					binary = binary.concat("0");
-				} else {
-					binary = binary.concat("1");
+		for (int k = 0; k < chart.length; ++k){
+			LinkedList<Brick> renkoChart = chart[k].getRenkoChart();
+			
+			for (int i = 0; i < renkoChart.size()-4; ++i){
+				String binary = "";
+				for (int j = 0; j < 4; ++j){
+					
+					if (renkoChart.get(i+j).ud == UD.UP){
+						binary = binary.concat("0");
+					} else {
+						binary = binary.concat("1");
+					}
 				}
+				takeAction(Integer.parseInt(binary,2),renkoChart.get(i+4));
 			}
-			takeAction(Integer.parseInt(binary,2),renkoChart.get(i+4));
+			fitness += determineFitness(renkoChart);
+			// System.out.println("Stock " + k + " Trader " + id + " " + (double)fitness/100);
+			agent.fitness += fitness;
+			money = 100000*100;
 		}
-		determineFitness(renkoChart);
-		System.out.println(id + " " + fitness + " " + money);
+
 		generationDone = true;
 	}
 
-	private void determineFitness(LinkedList<Brick> renkoChart){
+	private long determineFitness(LinkedList<Brick> renkoChart){
 		Integer lastDay = renkoChart.get(renkoChart.size()-1).day.highPrice + renkoChart.get(renkoChart.size()-1).day.lowPrice;
 		Double average = (double)lastDay/2;
-		fitness =(long)(money + (shares * average));
+		return (long)(money + (shares * average));
 	}
 
 	private void takeAction(Integer action,Brick day){
