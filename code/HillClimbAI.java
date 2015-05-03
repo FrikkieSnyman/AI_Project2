@@ -4,7 +4,7 @@ import java.util.*;
  * @author Frikkie Snyman - 13028741
  */
 public class HillClimbAI extends AI{
-	Agent initialAgent;
+	public Agent initialAgent;
 	/**
 	 * Constructor for HillClimbAI class
 	 * @param  chart     Array of charts on which trading must occur
@@ -76,7 +76,6 @@ public class HillClimbAI extends AI{
 
 			for (int j = 0; j < i+1; ++j){
 				temp.bsh[j] = BSH.values()[(temp.bsh[j].ordinal()+(i+j))%3];
-				// temp.bsh[j] = BSH.values()[randInt(0,2)];
 			}
 			neigbours.add(temp);
 		}
@@ -171,6 +170,20 @@ public class HillClimbAI extends AI{
 		}
 		agent.money -= sharePrice * suggestedAmount;
 		agent.shares += suggestedAmount;
+
+		Integer tradeAmount = sharePrice * suggestedAmount;
+
+		Integer stt = (int) Math.round(0.0025*tradeAmount);
+		Integer brokerageFee = (int) Math.round(0.005*tradeAmount);
+		if (brokerageFee < 7000){
+			brokerageFee = 7000;
+		}
+		Integer strate = 1158;
+		Integer ipl = (int) Math.round(0.000002*tradeAmount);
+		Integer vat = (int) Math.round(0.14 * (stt + brokerageFee + strate + ipl));
+		Integer fees = vat + stt + brokerageFee + strate + ipl;
+
+		agent.money -= fees;
 	}
 	/**
 	 * Determines wheter shares can be bought

@@ -91,20 +91,13 @@ public class GeneticAgent extends Thread{
 		Integer sharePrice = (int)Math.round((double)sum/2);
 
 		Integer suggestedAmount = (int)Math.round(money / sharePrice);
-		boolean pass = bought(suggestedAmount,sharePrice);
+		Integer fees = 0;
+		boolean pass = bought(suggestedAmount,sharePrice,fees);
 		while(!pass){
-			pass = bought(--suggestedAmount,sharePrice);
+			pass = bought(--suggestedAmount,sharePrice,fees);
 		}
 		money -= sharePrice * suggestedAmount;
-		shares += suggestedAmount;
-	}
-	/**
-	 * Determines wheter shares can be bought
-	 * @param  suggestedAmount Amount of shares that is suggested to be bought
-	 * @param  sharePrice      Price of shares
-	 * @return                 Returns true if the amount of shares can be bought, else returns false
-	 */
-	private boolean bought(Integer suggestedAmount, Integer sharePrice){
+
 		Integer tradeAmount = sharePrice * suggestedAmount;
 
 		Integer stt = (int) Math.round(0.0025*tradeAmount);
@@ -115,7 +108,28 @@ public class GeneticAgent extends Thread{
 		Integer strate = 1158;
 		Integer ipl = (int) Math.round(0.000002*tradeAmount);
 		Integer vat = (int) Math.round(0.14 * (stt + brokerageFee + strate + ipl));
+		fees = vat + stt + brokerageFee + strate + ipl;
 
+		money -= fees;
+		shares += suggestedAmount;
+	}
+	/**
+	 * Determines wheter shares can be bought
+	 * @param  suggestedAmount Amount of shares that is suggested to be bought
+	 * @param  sharePrice      Price of shares
+	 * @return                 Returns true if the amount of shares can be bought, else returns false
+	 */
+	private boolean bought(Integer suggestedAmount, Integer sharePrice, Integer fees){
+		Integer tradeAmount = sharePrice * suggestedAmount;
+
+		Integer stt = (int) Math.round(0.0025*tradeAmount);
+		Integer brokerageFee = (int) Math.round(0.005*tradeAmount);
+		if (brokerageFee < 7000){
+			brokerageFee = 7000;
+		}
+		Integer strate = 1158;
+		Integer ipl = (int) Math.round(0.000002*tradeAmount);
+		Integer vat = (int) Math.round(0.14 * (stt + brokerageFee + strate + ipl));
 		Integer total = tradeAmount + vat + stt + brokerageFee + strate + ipl;
 
 		return (money > total);

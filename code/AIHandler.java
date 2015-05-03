@@ -30,9 +30,13 @@ public class AIHandler{
  */
 	public void ga(Integer population, Integer generations, Integer selectionStrategy, Integer tournamentSize, Double crossover, Double mutation, Double gap){
 		Agent[] bestAgents = new Agent[chart.length];
-		for (int i = 0; i < chart.length; ++i){
+		for (int i = 0; i < bestAgents.length; ++i){
 			bestAgents[i] = new Agent();
 		}
+
+
+		bestAgent = new Agent();
+		bestAgent.fitness = 0;
 		GeneticAI geneticAi = new GeneticAI(chart, bestAgent, bestAgents, population, generations, selectionStrategy, tournamentSize, crossover, mutation, gap);
 		System.out.println("Best agent: "  + " with fitness " + (double)(geneticAi.bestAgent.fitness)/100);
 		
@@ -94,25 +98,27 @@ public class AIHandler{
 			e.printStackTrace();
 		}
 
+
 	}
 /**
  * Function to be called if Hill Climb is prompted to trade on the charts
  */
 	public void hc(){
 		HillClimbAI ai = new HillClimbAI(chart, bestAgent);
-		bestAgent = ai.start();
-		System.out.println("Best found: " + (double)bestAgent.fitness/100);
 
+		Agent testAgent = new Agent();
+		ai.initialAgent = testAgent;
+		testAgent = ai.start();
 		List<String> lines = null;			
 		List<String> allLines = null;
 		try{
 			lines = Files.readAllLines(Paths.get("../../files/trader.txt"), Charset.defaultCharset());
 			allLines = Files.readAllLines(Paths.get("../../files/allTraders.txt"), Charset.defaultCharset());
-			if (Double.parseDouble(lines.get(0)) < (double)(bestAgent.fitness)/100){
+			if (Double.parseDouble(lines.get(0)) < (double)(testAgent.fitness)/100){
 				PrintWriter writer = new PrintWriter("../../files/trader.txt", "UTF-8");
-				writer.println((double)(bestAgent.fitness)/100);
-				for (int i = 0; i < bestAgent.bsh.length; ++i){
-					BSH tmp = bestAgent.bsh[i];
+				writer.println((double)(testAgent.fitness)/100);
+				for (int i = 0; i < testAgent.bsh.length; ++i){
+					BSH tmp = testAgent.bsh[i];
 					switch (tmp) {
 						case BUY:
 							writer.print("B");
@@ -131,10 +137,10 @@ public class AIHandler{
 			}
 
 			PrintWriter allwriter = new PrintWriter("../../files/allTraders.txt");
-			allLines.add(String.valueOf((double)(bestAgent.fitness)/100));
+			allLines.add(String.valueOf((double)(testAgent.fitness)/100));
 			StringBuilder sb = new StringBuilder();
-			for (int i = 0; i < bestAgent.bsh.length; ++i){
-				BSH tmp = bestAgent.bsh[i];
+			for (int i = 0; i < testAgent.bsh.length; ++i){
+				BSH tmp = testAgent.bsh[i];
 				switch (tmp) {
 					case BUY:
 						sb.append("B");
@@ -160,7 +166,6 @@ public class AIHandler{
 			System.out.println("Problem opening file");
 			e.printStackTrace();
 		}
-
 	}
 
 
@@ -198,7 +203,7 @@ public class AIHandler{
 		}
 
 	}
-	
+
 	/**
 	 * Determins the fitness of the agent after trading
 	 * @param  renkoChart Chart from which fitness must be evaluated
@@ -249,6 +254,20 @@ public class AIHandler{
 			pass = bought(--suggestedAmount,sharePrice);
 		}
 		money -= sharePrice * suggestedAmount;
+		Integer tradeAmount = sharePrice * suggestedAmount;
+
+		Integer stt = (int) Math.round(0.0025*tradeAmount);
+		Integer brokerageFee = (int) Math.round(0.005*tradeAmount);
+		if (brokerageFee < 7000){
+			brokerageFee = 7000;
+		}
+		Integer strate = 1158;
+		Integer ipl = (int) Math.round(0.000002*tradeAmount);
+		Integer vat = (int) Math.round(0.14 * (stt + brokerageFee + strate + ipl));
+		Integer fees = vat + stt + brokerageFee + strate + ipl;
+
+		money -= fees;
+
 		shares += suggestedAmount;
 	}
 	/**

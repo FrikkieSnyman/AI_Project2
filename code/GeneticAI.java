@@ -18,7 +18,9 @@ public class GeneticAI extends AI{
 	 * @param mutation          Probability of mutation occuring
 	 * @param gap               Percentage of generation that survives due to elitism
 	 */
-	public GeneticAI(Chart[] chart, Agent bestAgent,Agent[] bestAgents, Integer population, Integer generations, Integer selectionStrategy, Integer tournamentSize, Double crossover, Double mutation, Double gap){
+	public GeneticAI(Chart[] chart, Agent bestAgent,Agent[] bestAgents, 
+					Integer population, Integer generations, Integer selectionStrategy, 
+					Integer tournamentSize, Double crossover, Double mutation, Double gap){
 		super(chart,bestAgent);
 
 		GeneticAgent[] agents = new GeneticAgent[population];
@@ -29,40 +31,33 @@ public class GeneticAI extends AI{
 		}
 		bestAgent = new Agent();
 
-		for (int g = 0; g < generations; ++g){
-			// for (int i = 0; i < this.chart.length; ++i){
-			// 	Chart currentChart = super.chart[i];
-			
-				boolean block = true;
+		for (int g = 0; g < generations; ++g){		
+			boolean block = true;
+			for (int j = 0; j < population; ++j){
+				Agent tmp = agents[j].agent;
+				agents[j] = new GeneticAgent(j);
+				agents[j].agent = tmp;
+				agents[j].agent.fitness = 0;
+				agents[j].chart = super.chart;
+				agents[j].start();
+			}
 
+			while(block){ // Wait for each thread to finish its generation
 				for (int j = 0; j < population; ++j){
-					Agent tmp = agents[j].agent;
-					agents[j] = new GeneticAgent(j);
-					agents[j].agent = tmp;
-					agents[j].agent.fitness = 0;
-					agents[j].chart = super.chart;
-					// agents[j].chart = currentChart;
-					agents[j].start();
-				}
-
-				while(block){ // Wait for each thread to finish its generation
-					for (int j = 0; j < population; ++j){
-						if (!agents[j].generationDone){
-							block = true;
-							break;
-						}
-						block = false;
+					if (!agents[j].generationDone){
+						block = true;
+						break;
 					}
+					block = false;
 				}
+			}
 
-				for (int j = 0; j < agents.length; ++j){
-					if (agents[j].fitness > bestAgent.fitness){
-						this.bestAgent = agents[j].agent;
-					}
+			for (int j = 0; j < agents.length; ++j){
+				if (agents[j].fitness > bestAgent.fitness){
+					this.bestAgent = agents[j].agent;
 				}
-				calculateNextGeneration(agents, population, selectionStrategy, tournamentSize, crossover, mutation, gap);
-			// }
-
+			}
+			calculateNextGeneration(agents, population, selectionStrategy, tournamentSize, crossover, mutation, gap);
 		}
 	}
 	/**
