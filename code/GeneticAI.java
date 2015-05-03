@@ -140,13 +140,46 @@ public class GeneticAI extends AI{
 			
 				break;
 			case 4:		// Rank-based
-			
+				sortBasedOnFitness(agents);
+				LinkedList<GeneticAgent> ranks = new LinkedList<>();
+				for (int i = 0; i < agents.length; ++i){
+					for (int j = 0; j <= i; ++j){
+						ranks.add(agents[i]);
+					}
+				}
+
+				rand = randInt(0,ranks.size()-1);
+				parents[0] = ranks.get(rand);
+				rand2 = randInt(0,ranks.size()-1);
+				while (rand2 == rand){
+					rand2 = randInt(0,ranks.size()-1);
+				}
+				parents[1] = ranks.get(rand2);
 				break;
 			default:
 				break;
 			
 		}
 		return parents;
+	}
+
+	private void sortBasedOnFitness(GeneticAgent[] agents){
+		int length = agents.length;
+		boolean flag = true;
+		GeneticAgent temp;
+
+		while (flag){
+			flag = false;
+			for (int j = 0; j < agents.length-1; ++j){
+				if (agents[j].fitness > agents[j+1].fitness){
+					temp = agents[j];
+					agents[j] = agents[j+1];
+					agents[j+1] = temp;
+					flag = true;
+				}
+			}
+
+		}
 	}
 
 	private void replaceWeaklings(GeneticAgent[] agents, GeneticAgent[] survivors, Double gap){
