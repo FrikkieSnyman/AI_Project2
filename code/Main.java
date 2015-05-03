@@ -51,7 +51,7 @@ public class Main{
 
 			aihandler.ga(population, generations, strat, tournamentSize, crossover, mutation, gap);
 		} else if (choice.equals("2")){ // HC
-
+			aihandler.hc();
 		} else {
 			try{
 

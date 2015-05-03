@@ -3,6 +3,8 @@ import java.util.Random;
 public class Agent{
 	public BSH[] bsh;
 	public long fitness = 0;
+	public long money = 100000*100;	// For hillclimber
+	public Integer shares = 0;	// For hillclimber
 	public Agent(){
 		bsh = new BSH[32];
 

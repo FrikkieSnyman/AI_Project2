@@ -19,7 +19,7 @@ public class AIHandler{
 			bestAgents[i] = new Agent();
 		}
 		GeneticAI geneticAi = new GeneticAI(chart, bestAgent, bestAgents, population, generations, selectionStrategy, tournamentSize, crossover, mutation, gap);
-		System.out.println("Best agent: "  + " \nwith fitness " + (double)(geneticAi.bestAgent.fitness)/100);
+		System.out.println("Best agent: "  + " with fitness " + (double)(geneticAi.bestAgent.fitness)/100);
 		
 		List<String> lines = null;			
 		List<String> allLines = null;
@@ -68,6 +68,71 @@ public class AIHandler{
 				}
 			}
 			sb.append(" " + selectionStrategy);
+			allLines.add(sb.toString());
+			for (int i = 0; i < allLines.size(); ++i){
+				allwriter.println(allLines.get(i));
+			}
+			allwriter.close();
+
+		} catch (IOException e){
+			System.out.println("Problem opening file");
+			e.printStackTrace();
+		}
+
+	}
+
+	public void hc(){
+		HillClimbAI ai = new HillClimbAI(chart, bestAgent);
+		bestAgent = ai.start();
+		System.out.println("Best found: " + (double)bestAgent.fitness/100);
+
+		List<String> lines = null;			
+		List<String> allLines = null;
+		try{
+			lines = Files.readAllLines(Paths.get("../../files/trader.txt"), Charset.defaultCharset());
+			allLines = Files.readAllLines(Paths.get("../../files/allTraders.txt"), Charset.defaultCharset());
+			if (Double.parseDouble(lines.get(0)) < (double)(bestAgent.fitness)/100){
+				PrintWriter writer = new PrintWriter("../../files/trader.txt", "UTF-8");
+				writer.println((double)(bestAgent.fitness)/100);
+				for (int i = 0; i < bestAgent.bsh.length; ++i){
+					BSH tmp = bestAgent.bsh[i];
+					switch (tmp) {
+						case BUY:
+							writer.print("B");
+							break;
+						case SELL:
+							writer.print("S");
+							break;
+						case HOLD:
+							writer.print("H");
+							break;
+						default:
+							break;						
+					}
+				}
+				writer.close();
+			}
+
+			PrintWriter allwriter = new PrintWriter("../../files/allTraders.txt");
+			allLines.add(String.valueOf((double)(bestAgent.fitness)/100));
+			StringBuilder sb = new StringBuilder();
+			for (int i = 0; i < bestAgent.bsh.length; ++i){
+				BSH tmp = bestAgent.bsh[i];
+				switch (tmp) {
+					case BUY:
+						sb.append("B");
+						break;
+					case SELL:		
+						sb.append("S");
+						break;
+					case HOLD:		
+						sb.append("H");
+						break;
+					default:
+						break;						
+				}
+			}
+			sb.append(" HC");
 			allLines.add(sb.toString());
 			for (int i = 0; i < allLines.size(); ++i){
 				allwriter.println(allLines.get(i));
