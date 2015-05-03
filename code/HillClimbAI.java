@@ -1,13 +1,23 @@
 import java.util.*;
-
+/**
+ * Class for Hill Climb
+ * @author Frikkie Snyman - 13028741
+ */
 public class HillClimbAI extends AI{
 	Agent initialAgent;
-
+	/**
+	 * Constructor for HillClimbAI class
+	 * @param  chart     Array of charts on which trading must occur
+	 * @param  bestAgent Reference to the bestAgent
+	 */
 	public HillClimbAI(Chart[] chart, Agent bestAgent){
 		super(chart,bestAgent);
 		initialAgent = new Agent();
 	}
-
+	/**
+	 * Sets the algorithm in motion
+	 * @return Returns the best agent as determined by algorithm
+	 */
 	public Agent start(){
 		boolean best = false;
 		long fitness = runThrough(initialAgent);
@@ -35,7 +45,12 @@ public class HillClimbAI extends AI{
 		}
 		return bestAgentSoFar;
 	}
-
+	/**
+	 * Compares agents for equality
+	 * @param  agent1 Agent to be compared
+	 * @param  agent2 Agent to be compared to
+	 * @return        true if equal, false otherwise
+	 */
 	private boolean compareAgents(Agent agent1, Agent agent2){
 		for (int i = 0; i < 32; ++i){
 			if (agent1.bsh[i] != agent2.bsh[i]){
@@ -45,7 +60,11 @@ public class HillClimbAI extends AI{
 
 		return true;
 	}
-
+	/**
+	 * Creates a list of neighbours
+	 * @param  agent Agent on which neighbours are based
+	 * @return       LinkedList of Agent
+	 */
 	private LinkedList<Agent> determineNeighbours(Agent agent){
 		LinkedList<Agent> neigbours = new LinkedList<>();
 		
@@ -63,14 +82,23 @@ public class HillClimbAI extends AI{
 		}
 		return neigbours;
 	}
-
+	/**
+	 * Generates a random integer within a range
+	 * @param  min Minimum of range inclusive
+	 * @param  max Maximum of range inclusive
+	 * @return     A random integer within range
+	 */
 	private static int randInt(int min, int max){
 		Random rand = new Random();
 		int randomNum = rand.nextInt((max-min) + 1) + min;
 
 		return randomNum;
 	}
-
+	/**
+	 * Trades through Charts and determines fitness
+	 * @param  agent Agent that trades
+	 * @return       Fitness of agent
+	 */
 	private long runThrough(Agent agent){
 		for (int k = 0; k < chart.length; ++k){
 			LinkedList<Brick> renkoChart = chart[k].getRenkoChart();
@@ -91,12 +119,22 @@ public class HillClimbAI extends AI{
 		return agent.fitness;
 	}
 
+	/**
+	 * Determins the fitness of the agent after trading
+	 * @param  renkoChart Chart from which fitness must be evaluated
+	 * @return            Fitness of trader
+	 */
 	private long determineFitness(LinkedList<Brick> renkoChart, Agent agent){
 		Integer lastDay = renkoChart.get(renkoChart.size()-1).day.highPrice + renkoChart.get(renkoChart.size()-1).day.lowPrice;
 		Double average = (double)lastDay/2;
 		return (long)(agent.money + (agent.shares * average));
 	}
-
+	/**
+	 * Decide what to do
+	 * @param action Integer value of action to be taken
+	 * @param day    Day on which action is taken
+	 * @param agent  Agent that takes the action
+	 */
 	private void takeAction(Integer action,Brick day, Agent agent){
 		BSH bsh = agent.bsh[action];
 
@@ -117,7 +155,11 @@ public class HillClimbAI extends AI{
 			
 		}
 	}
-
+	/**
+	 * Buys shares
+	 * @param day Day on which shares are bought
+	 * @param agent Agent that buys
+	 */
 	private void buy(Brick day, Agent agent){
 		Integer sum = day.day.highPrice + day.day.lowPrice;
 		Integer sharePrice = (int)Math.round((double)sum/2);
@@ -130,7 +172,13 @@ public class HillClimbAI extends AI{
 		agent.money -= sharePrice * suggestedAmount;
 		agent.shares += suggestedAmount;
 	}
-
+	/**
+	 * Determines wheter shares can be bought
+	 * @param  suggestedAmount Amount of shares that is suggested to be bought
+	 * @param  sharePrice      Price of shares
+	 * @param agent 		   Agent which buys
+	 * @return                 Returns true if the amount of shares can be bought, else returns false
+	 */
 	private boolean bought(Integer suggestedAmount, Integer sharePrice, Agent agent){
 		Integer tradeAmount = sharePrice * suggestedAmount;
 
@@ -147,7 +195,11 @@ public class HillClimbAI extends AI{
 
 		return (agent.money > total);
 	}
-
+	/**
+	 * Sells shares
+	 * @param day 	Day on which shares are sold
+	 * @param agent Agent that sells
+	 */
 	private void sell(Brick day, Agent agent){
 		Integer sum = day.day.highPrice + day.day.lowPrice;
 		Integer sharePrice = (int)Math.round((double)sum/2);

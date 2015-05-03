@@ -4,7 +4,9 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.charset.Charset;
-
+/**
+ * Main class for program
+ */
 public class Main{
 	public static void main(String[] args) {		
 		Chart[] renkoChart = new Chart[3];

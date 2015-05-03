@@ -1,8 +1,23 @@
 import java.util.Random;
 import java.util.*;
-
+/**
+ * Class for Genetic Algorithm
+ * @author Frikkie Snyman - 13028741
+ */
 public class GeneticAI extends AI{
-
+	/**
+	 * Constructor for GeneticAI. Also starts execution of evolution
+	 * @param  chart             Array of charts to evolve on
+	 * @param  bestAgent         Reference to best agent
+	 * @param  bestAgents        Array of best agents - not used by class
+	 * @param population        Size of the population to be used by the Genetic Algorithm
+	 * @param generations       The amount of generations throught which the traders must evolve
+	 * @param selectionStrategy Selection Strategy to be used by the crossover function. 1 = random, 2 = tournament, 3 = fitness-proportional, 4 = rank-based
+	 * @param tournamentSize    Size of the tournament sample, ignored if selection strategy is not 2
+	 * @param crossover         Probability of crossover occuring
+	 * @param mutation          Probability of mutation occuring
+	 * @param gap               Percentage of generation that survives due to elitism
+	 */
 	public GeneticAI(Chart[] chart, Agent bestAgent,Agent[] bestAgents, Integer population, Integer generations, Integer selectionStrategy, Integer tournamentSize, Double crossover, Double mutation, Double gap){
 		super(chart,bestAgent);
 
@@ -50,7 +65,16 @@ public class GeneticAI extends AI{
 
 		}
 	}
-
+	/**
+	 * Calculates the next generation by evolving the current one
+	 * @param agents            Array of trader agents to evolve
+	 * @param population        Size of population
+	 * @param selectionStrategy Selection strategy to be used
+	 * @param tournamentSize    Size of tournament if tournament selection is in use, ignored otherwise
+	 * @param crossover         Probability of crossover occuring
+	 * @param mutation          Probability of mutation occuring
+	 * @param gap               Percentage of population that must survive due to elitism
+	 */
 	private void calculateNextGeneration(GeneticAgent[] agents, Integer population, Integer selectionStrategy, Integer tournamentSize, Double crossover, Double mutation, Double gap){
 		GeneticAgent[] oldGeneration = new GeneticAgent[population];
 		for (int i = 0; i < population; ++i){
@@ -70,7 +94,13 @@ public class GeneticAI extends AI{
 		mutate(agents,mutation);
 		replaceWeaklings(agents,survivors, gap);
 	}
-
+	/**
+	 * Generates a set of parents to be used for crossover
+	 * @param  agents            Array of trader agents
+	 * @param  selectionStrategy Selection strategy in use: 1 = random, 2 = tournament, 3 = fitness-proportional, 4 = Rank-based
+	 * @param  tournamentSize    Size of tournament if applicable, ignored otherwise
+	 * @return                   Array of 2 parent agents
+	 */
 	private GeneticAgent[] selectParents(GeneticAgent[] agents, Integer selectionStrategy, Integer tournamentSize){
 		GeneticAgent[] parents = new GeneticAgent[2];
 		int rand;
@@ -162,7 +192,10 @@ public class GeneticAI extends AI{
 		}
 		return parents;
 	}
-
+	/**
+	 * Sorts an array of agents based on their fitness
+	 * @param agents Array of agents to be sorted
+	 */
 	private void sortBasedOnFitness(GeneticAgent[] agents){
 		int length = agents.length;
 		boolean flag = true;
@@ -181,7 +214,12 @@ public class GeneticAI extends AI{
 
 		}
 	}
-
+	/**
+	 * Replaces weakest agents by the fittest agents due to elitism
+	 * @param agents    Array of agents
+	 * @param survivors Fittest agents
+	 * @param gap       Percentage of population that must survive
+	 */
 	private void replaceWeaklings(GeneticAgent[] agents, GeneticAgent[] survivors, Double gap){
 		Integer numSurvivors = (int) Math.round(gap*agents.length);
 		GeneticAgent[] weaklings = new GeneticAgent[numSurvivors];
@@ -206,7 +244,12 @@ public class GeneticAI extends AI{
 		}
 
 	}
-
+	/**
+	 * Elitism function that determines which agents were the strongest due to fitness
+	 * @param  agents Array of agents on which to determine the fittest
+	 * @param  gap    Percentage of population that must survive
+	 * @return        Array of agents that were deemed fittest
+	 */
 	private GeneticAgent[] elitism(GeneticAgent[] agents, Double gap){
 		Integer numSurvivors = (int) Math.round(gap*agents.length);
 		GeneticAgent[] survivors = new GeneticAgent[numSurvivors];
@@ -226,7 +269,13 @@ public class GeneticAI extends AI{
 
 		return survivors;
 	}
-
+	/**
+	 * Performs crossover on agents
+	 * @param child     Array of children which must undergo crossover
+	 * @param parents   Array of parents which must be crossed
+	 * @param crossover Probability of crossover occuring
+	 * @param index     Index of children in the child array
+	 */
 	private void crossover(GeneticAgent[] child, GeneticAgent[] parents, Double crossover, int index){
 		Integer prob = ((Double)(crossover*100)).intValue();
 		Integer rand = randInt(0,100);
@@ -246,7 +295,11 @@ public class GeneticAI extends AI{
 		}
 
 	}
-
+	/**
+	 * Mutates agents
+	 * @param children Array to be mutated
+	 * @param mutation Probability of mutation occuring
+	 */
 	private void mutate(GeneticAgent[] children, Double mutation){
 		Integer prob = ((Double)(mutation*100)).intValue();
 		
@@ -274,7 +327,12 @@ public class GeneticAI extends AI{
 			}
 		}
 	}
-
+	/**
+	 * Generates a random integer within a range
+	 * @param  min Minimum of range inclusive
+	 * @param  max Maximum of range inclusive
+	 * @return     A random integer within range
+	 */
 	private static int randInt(int min, int max){
 		Random rand = new Random();
 		int randomNum = rand.nextInt((max-min) + 1) + min;

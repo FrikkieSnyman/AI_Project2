@@ -1,20 +1,27 @@
 import java.util.*;
-
+/**
+ * Class for Genetic that handles trading for a trader used by the Genetic Algorithm
+ * @author Frikkie Snyman - 13028741
+ */
 public class GeneticAgent extends Thread{
 	
 	public Agent agent = null;
 	public Chart[] chart = null;
-	// public Chart chart = null;
 	public boolean generationDone = false;
 	public long money = 100000*100;
 	public long fitness = 0;
 	public Integer shares = 0;
 	public Integer id;
-	
+	/**
+	 * Constructor for a GeneticAgent
+	 * @param  id ID of trrader
+	 */
 	public GeneticAgent(Integer id){
 		this.id = id;
 	}
-
+	/**
+	 * Starts the thread and trades on all charts
+	 */
 	public void run(){
 		generationDone = false;
 		for (int k = 0; k < chart.length; ++k){
@@ -40,13 +47,21 @@ public class GeneticAgent extends Thread{
 
 		generationDone = true;
 	}
-
+	/**
+	 * Determines fitness of trader
+	 * @param  renkoChart Chart of which fitness is determines
+	 * @return            Fitness of trader
+	 */
 	private long determineFitness(LinkedList<Brick> renkoChart){
 		Integer lastDay = renkoChart.get(renkoChart.size()-1).day.highPrice + renkoChart.get(renkoChart.size()-1).day.lowPrice;
 		Double average = (double)lastDay/2;
 		return (long)(money + (shares * average));
 	}
-
+	/**
+	 * Decide what to do
+	 * @param action Integer value of action to be taken
+	 * @param day    Day on which action is taken
+	 */
 	private void takeAction(Integer action,Brick day){
 		BSH bsh = agent.bsh[action];
 
@@ -67,7 +82,10 @@ public class GeneticAgent extends Thread{
 			
 		}
 	}
-
+	/**
+	 * Buys shares
+	 * @param day Day on which shares are bought
+	 */
 	private void buy(Brick day){
 		Integer sum = day.day.highPrice + day.day.lowPrice;
 		Integer sharePrice = (int)Math.round((double)sum/2);
@@ -80,7 +98,12 @@ public class GeneticAgent extends Thread{
 		money -= sharePrice * suggestedAmount;
 		shares += suggestedAmount;
 	}
-
+	/**
+	 * Determines wheter shares can be bought
+	 * @param  suggestedAmount Amount of shares that is suggested to be bought
+	 * @param  sharePrice      Price of shares
+	 * @return                 Returns true if the amount of shares can be bought, else returns false
+	 */
 	private boolean bought(Integer suggestedAmount, Integer sharePrice){
 		Integer tradeAmount = sharePrice * suggestedAmount;
 
@@ -97,7 +120,10 @@ public class GeneticAgent extends Thread{
 
 		return (money > total);
 	}
-
+	/**
+	 * Sells shares
+	 * @param day Day on which shares are sold
+	 */
 	private void sell(Brick day){
 		Integer sum = day.day.highPrice + day.day.lowPrice;
 		Integer sharePrice = (int)Math.round((double)sum/2);
