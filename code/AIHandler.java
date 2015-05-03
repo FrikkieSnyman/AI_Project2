@@ -178,6 +178,9 @@ public class AIHandler{
 		if (brokerageFee < 7000){
 			brokerageFee = 7000;
 		}
+		if (sellValue < brokerageFee){
+			return;
+		}
 		Integer strate = 1158;
 		Integer ipl = (int) Math.round(0.000002*sellValue);
 		Integer vat = (int) Math.round(0.14 * (brokerageFee + strate + ipl));
