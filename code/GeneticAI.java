@@ -140,7 +140,7 @@ public class GeneticAI extends AI{
 			
 				break;
 			case 4:		// Rank-based
-
+			
 				break;
 			default:
 				break;

@@ -67,6 +67,7 @@ public class AIHandler{
 						break;						
 				}
 			}
+			sb.append(" " + selectionStrategy);
 			allLines.add(sb.toString());
 			for (int i = 0; i < allLines.size(); ++i){
 				allwriter.println(allLines.get(i));
