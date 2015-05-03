@@ -1,5 +1,9 @@
 import java.text.*;
 import java.util.*;
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.charset.Charset;
 
 public class Main{
 	public static void main(String[] args) {		
@@ -46,8 +50,44 @@ public class Main{
 			Double gap = Double.parseDouble(System.console().readLine());
 
 			aihandler.ga(population, generations, strat, tournamentSize, crossover, mutation, gap);
-		} else { // HC
+		} else if (choice.equals("2")){ // HC
 
+		} else {
+			try{
+
+				Chart[] testChart = new Chart[4];
+
+				fileHander = new FileHandler("../../files/agl.dat");
+				testChart[0] = fileHander.getChart();
+				fileHander = new FileHandler("../../files/ALSI40.dat");
+				testChart[1] = fileHander.getChart();
+				fileHander = new FileHandler("../../files/bil.dat");
+				testChart[2] = fileHander.getChart();
+				fileHander = new FileHandler("../../files/gfi.dat");
+				testChart[3] = fileHander.getChart();
+				Agent agent = new Agent();
+				List<String> lines = Files.readAllLines(Paths.get("../../files/test.txt"), Charset.defaultCharset());
+				for (int i = 0; i < lines.get(1).length(); ++i){
+					char tmp = lines.get(1).charAt(i);
+					switch (tmp) {
+						case 'B':
+							agent.bsh[i] = BSH.BUY;
+							break;
+						case 'S':
+							agent.bsh[i] = BSH.SELL;
+							break;
+						case 'H':
+							agent.bsh[i] = BSH.HOLD;
+							break;
+						default:
+							break;						
+					}
+				}
+				aihandler.tradeOverAll(testChart,agent);
+			} catch (IOException e){
+				System.out.println("Problem opening file");
+				e.printStackTrace();
+			}
 		}
 	}
 }

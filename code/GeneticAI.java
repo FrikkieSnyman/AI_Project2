@@ -1,5 +1,5 @@
 import java.util.Random;
-import java.util.Arrays;
+import java.util.*;
 
 public class GeneticAI extends AI{
 
@@ -13,22 +13,20 @@ public class GeneticAI extends AI{
 			agents[j].agent = new Agent();
 		}
 		bestAgent = new Agent();
-		// bestAgents = new Agent[this.chart.length];
-		
-		// for (int i = 0; i < bestAgents.length; ++i){
-		// 	bestAgents[i] = new Agent();
-		// }
-		// for (int i = 0; i < this.chart.length; ++i){
-		// 	Chart currentChart = super.chart[i];
+
+		for (int g = 0; g < generations; ++g){
+			// for (int i = 0; i < this.chart.length; ++i){
+			// 	Chart currentChart = super.chart[i];
 			
-			for (int g = 0; g < generations; ++g){
 				boolean block = true;
 
 				for (int j = 0; j < population; ++j){
 					Agent tmp = agents[j].agent;
 					agents[j] = new GeneticAgent(j);
 					agents[j].agent = tmp;
+					agents[j].agent.fitness = 0;
 					agents[j].chart = super.chart;
+					// agents[j].chart = currentChart;
 					agents[j].start();
 				}
 
@@ -43,7 +41,6 @@ public class GeneticAI extends AI{
 				}
 
 				for (int j = 0; j < agents.length; ++j){
-					// System.out.println("Agent " +j + " fitness = " + (double)agents[j].fitness/100);
 					if (agents[j].fitness > bestAgent.fitness){
 						this.bestAgent = agents[j].agent;
 					}
@@ -61,48 +58,90 @@ public class GeneticAI extends AI{
 			oldGeneration[i].agent = new Agent();
 			for (int j = 0; j < 32; ++j){
 				oldGeneration[i].agent.bsh[j] = agents[i].agent.bsh[j];
+				oldGeneration[i].fitness = agents[i].fitness;
+				oldGeneration[i].agent.fitness = agents[i].agent.fitness;
 			}
 		}
-
 		GeneticAgent[] survivors = elitism(agents,gap);
-
 		for (int i = 0; i < population-1; i += 2 ){
-			// System.out.println(i + " :" + Arrays.toString(agents[i].agent.bsh) + " \n" + (i+1) + " :" + Arrays.toString(agents[i+1].agent.bsh));
 			GeneticAgent[] parents = selectParents(oldGeneration,selectionStrategy,tournamentSize);
 			crossover(agents,parents,crossover,i);
-			// System.out.println(i + " :" + Arrays.toString(agents[i].agent.bsh) + " \n" + (i+1) + " :" + Arrays.toString(agents[i+1].agent.bsh));
 		}
 		mutate(agents,mutation);
-
 		replaceWeaklings(agents,survivors, gap);
 	}
 
 	private GeneticAgent[] selectParents(GeneticAgent[] agents, Integer selectionStrategy, Integer tournamentSize){
 		GeneticAgent[] parents = new GeneticAgent[2];
-		
+		int rand;
+		int rand2;
 		switch (selectionStrategy) {
 			case 1:		// Random
-				int rand = randInt(0,agents.length-1);
+				rand = randInt(0,agents.length-1);
 				parents[0] = agents[rand];
-				int rand2 = randInt(0,agents.length-1);
+				rand2 = randInt(0,agents.length-1);
 				while (rand2 == rand){
 					rand2 = randInt(0,agents.length-1);
 				}
 				parents[1] = agents[rand2];
 				break;
-
 			case 2:		// Tournament
+				GeneticAgent[] chosenOnes = new GeneticAgent[tournamentSize];
+				for (int i = 0; i < tournamentSize; ++i){
+					rand = randInt(0,agents.length-1);
+					chosenOnes[i] = agents[rand];
+				}
 
+				GeneticAgent best = chosenOnes[0];
+				for (int i = 1; i < tournamentSize; ++i){
+					if (chosenOnes[i].agent.fitness > best.agent.fitness){
+						best = chosenOnes[i];
+					}
+				}
+
+				for (int i = 0; i < tournamentSize; ++i){
+					rand = randInt(0,agents.length-1);
+					chosenOnes[i] = agents[rand];
+				}
+
+				GeneticAgent best2 = chosenOnes[0];
+				for (int i = 1; i < tournamentSize; ++i){
+					if (chosenOnes[i].agent.fitness > best2.agent.fitness){
+						best2 = chosenOnes[i];
+					}
+				}
+				parents[0] = best;
+				parents[1] = best2;
 				break;
-
 			case 3:		// Fitness-proportional
+				long totalFitness = 0;
+				for (int i = 0; i < agents.length; ++i){
+					totalFitness += agents[i].fitness;
 
+				}
+				Double totFit = (double) totalFitness/100;
+				LinkedList<Integer> wheel = new LinkedList<>();
+
+				for (int i = 0; i < agents.length; ++i){
+					int size = (int) Math.round((agents[i].fitness/totFit)*100);
+
+					for (int j = 0; j < size; ++j){
+						wheel.add(i);
+					}
+				}
+
+				rand = randInt(0,wheel.size()-1);
+				parents[0] = agents[wheel.get(rand)];
+				rand2 = randInt(0,wheel.size()-1);
+				while (rand2 == rand){
+					rand2 = randInt(0,wheel.size()-1);
+				}
+				parents[1] = agents[wheel.get(rand2)];
+			
 				break;
-
 			case 4:		// Rank-based
 
 				break;
-
 			default:
 				break;
 			

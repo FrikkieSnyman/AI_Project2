@@ -4,6 +4,7 @@ public class GeneticAgent extends Thread{
 	
 	public Agent agent = null;
 	public Chart[] chart = null;
+	// public Chart chart = null;
 	public boolean generationDone = false;
 	public long money = 100000*100;
 	public long fitness = 0;
@@ -18,11 +19,11 @@ public class GeneticAgent extends Thread{
 		generationDone = false;
 		for (int k = 0; k < chart.length; ++k){
 			LinkedList<Brick> renkoChart = chart[k].getRenkoChart();
+			// LinkedList<Brick> renkoChart = chart.getRenkoChart();
 			
 			for (int i = 0; i < renkoChart.size()-4; ++i){
 				String binary = "";
 				for (int j = 0; j < 4; ++j){
-					
 					if (renkoChart.get(i+j).ud == UD.UP){
 						binary = binary.concat("0");
 					} else {
@@ -32,7 +33,7 @@ public class GeneticAgent extends Thread{
 				takeAction(Integer.parseInt(binary,2),renkoChart.get(i+4));
 			}
 			fitness += determineFitness(renkoChart);
-			// System.out.println("Stock " + k + " Trader " + id + " " + (double)fitness/100);
+			// System.out.println(" Trader " + id + " " + (double)fitness/100);
 			agent.fitness += fitness;
 			money = 100000*100;
 		}
